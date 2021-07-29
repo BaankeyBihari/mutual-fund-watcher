@@ -11,8 +11,8 @@
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write .",
     "lint": "eslint src --fix",
-    "test": "jest",
-    "test-all": "yarn lint && yarn type-check && yarn test"
+    "test": "jest --passWithNoTests",
+    "test-all": "npm-run-all -s lint type-check test"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
@@ -36,7 +36,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@types/jest": "^26.0.24",
-    "@types/node": "^16.4.2",
+    "@types/node": "^16.4.6",
     "@types/react": "^17.0.15",
     "babel-jest": "^27.0.6",
     "eslint": "^7.31.0",
@@ -50,6 +50,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.0.6",
     "lint-staged": "^11.1.1",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "react-test-renderer": "^17.0.2",
     "typescript": "^4.3.5"

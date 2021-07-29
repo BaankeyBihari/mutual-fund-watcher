@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, Fragment } from "react"
 
-import { parse, subDays, subHours } from "date-fns"
+import { parse, subDays, subSeconds } from "date-fns"
 
 import MFSelector from "@components/MFSelector"
+import MFToggleOutdated from "@components/MFToggleOutdated"
 
-export default function Home() {
+export default function Home(props) {
   const [selectedSchemes, setSelectedSchemes] = useState([])
   const [tank, setTank] = useState({})
   const [allowOutdated, setAllowOtdated] = useState(true)
@@ -12,8 +13,10 @@ export default function Home() {
   const [tankFetching, setTankFetching] = useState([])
   const [tankFetchedAt, setTankFetchedAt] = useState({})
   const [schemeToFetch, setSchemeToFetch] = useState(0)
+  const MF_MARK_OUTDATED_IN_DAYS = props.MF_MARK_OUTDATED_IN_DAYS
+  const MF_UPDATE_EXPIRY_IN_SECONDS = props.MF_UPDATE_EXPIRY_IN_SECONDS
+
   const handleDataChange = (v) => {
-    // console.log("v", v)
     setSelectedSchemes(
       v.map((e) => {
         return e.schemeCode
@@ -22,7 +25,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    let refreshWindow = subHours(new Date(), 1)
+    let refreshWindow = subSeconds(new Date(), MF_UPDATE_EXPIRY_IN_SECONDS)
     if (
       (!tank.hasOwnProperty(schemeToFetch) ||
         (tankFetchedAt.hasOwnProperty(schemeToFetch) &&
@@ -40,7 +43,7 @@ export default function Home() {
             let ttank = { ...tank }
             ttank[schemeToFetch] = data
             setTank(ttank)
-            let wt = subDays(new Date(), 4)
+            let wt = subDays(new Date(), parseInt(MF_MARK_OUTDATED_IN_DAYS))
             let topDate = parse(data.data[0].date, "dd-MM-yyyy", new Date())
             // console.log("topDate", topDate)
             if (wt > topDate) {
@@ -65,6 +68,8 @@ export default function Home() {
     tankOutdated,
     selectedSchemes,
     allowOutdated,
+    MF_MARK_OUTDATED_IN_DAYS,
+    MF_UPDATE_EXPIRY_IN_SECONDS,
   ])
 
   // useEffect(() => {
@@ -73,8 +78,8 @@ export default function Home() {
 
   // useEffect(() => {
   //   console.log("tankOutdated", tankOutdated)
-  //   console.log(process.env.MF_UPDATE_EXPIRY_IN_SECONDS)
-  //   console.log(process.env.MF_MARK_OUTDATED_IN_DAYS)
+  //   console.log(props.MF_UPDATE_EXPIRY_IN_SECONDS)
+  //   console.log(props)
   // }, [tankOutdated])
 
   // useEffect(() => {
@@ -89,12 +94,27 @@ export default function Home() {
     selectedSchemes.forEach((o) => {
       setSchemeToFetch(o)
     })
-  }, [selectedSchemes])
+  }, [selectedSchemes, allowOutdated])
 
   return (
-    <MFSelector
-      selectedSchemes={selectedSchemes}
-      dataChangeHandler={handleDataChange}
-    />
+    <Fragment>
+      <MFSelector
+        selectedSchemes={selectedSchemes}
+        dataChangeHandler={handleDataChange}
+      />
+      <MFToggleOutdated
+        inputState={allowOutdated}
+        onInputChange={setAllowOtdated}
+      />
+    </Fragment>
   )
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      MF_UPDATE_EXPIRY_IN_SECONDS: process.env.MF_UPDATE_EXPIRY_IN_SECONDS,
+      MF_MARK_OUTDATED_IN_DAYS: process.env.MF_MARK_OUTDATED_IN_DAYS,
+    },
+  }
 }

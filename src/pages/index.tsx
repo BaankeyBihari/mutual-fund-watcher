@@ -2,6 +2,8 @@ import { useState, useEffect, Fragment } from "react"
 
 import { parse, subDays, subSeconds } from "date-fns"
 
+import MFDataImportExport from "@components/MFDataImportExport"
+import MFPerformanceWindow from "@components/MFPerformanceWindow"
 import MFSelector from "@components/MFSelector"
 import MFToggleOutdated from "@components/MFToggleOutdated"
 
@@ -105,6 +107,17 @@ export default function Home(props) {
       <MFToggleOutdated
         inputState={allowOutdated}
         onInputChange={setAllowOtdated}
+      />
+      <MFPerformanceWindow
+        selectedSchemes={selectedSchemes}
+        tank={tank}
+        tankOutdated={tankOutdated}
+        allowOutdated={allowOutdated}
+        windowSize={30}
+      />
+      <MFDataImportExport
+        selectedSchemes={selectedSchemes}
+        setSelectedSchemes={setSelectedSchemes}
       />
     </Fragment>
   )

@@ -2,8 +2,8 @@ import React, { ChangeEvent, Fragment, useState } from "react"
 
 import Switch from "@material-ui/core/Switch"
 
-export default function Switches(props) {
-  const [state, setState] = useState(props.inputState || true)
+export default function ToggleSwitch(props) {
+  const [state, setState] = useState(props.inputState || false)
   const onInputChange = props.onInputChange
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

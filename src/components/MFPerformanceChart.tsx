@@ -6,7 +6,7 @@ const MFChart = (props) => {
     <Fragment>
       {props.data.length ? (
         <Chart
-          //   width={"600px"}
+          width={"100%"}
           //   height={"400px"}
           chartType="LineChart"
           loader={<div>Loading Chart</div>}

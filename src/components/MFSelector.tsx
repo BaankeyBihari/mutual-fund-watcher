@@ -26,6 +26,8 @@ import Autocomplete, {
 import fetch from "isomorphic-unfetch"
 import { VariableSizeList, ListChildComponentProps } from "react-window"
 
+import MFDataImportExport from "@components/MFDataImportExport"
+
 const LISTBOX_PADDING = 8 // px
 
 function renderRow(props: ListChildComponentProps) {
@@ -105,18 +107,6 @@ const ListboxComponent = forwardRef<HTMLDivElement>(function ListboxComponent(
   )
 })
 
-function random(length: number) {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  let result = ""
-
-  for (let i = 0; i < length; i += 1) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length))
-  }
-
-  return result
-}
-
 const useStyles = makeStyles({
   listbox: {
     boxSizing: "border-box",
@@ -138,13 +128,14 @@ export default function Virtualize(props) {
   const classes = useStyles()
   const [mfData, setMFData] = useState([])
   const [mfDefaultData, setMFDefaultData] = useState([])
+  const selectedSchemes = props.selectedSchemes
+  const dataChangeHandler = props.dataChangeHandler
 
   useEffect(() => {
     const getData = async () => {
       fetch(`https://api.mfapi.in/mf`)
         .then((r) => r.json())
         .then((data) => {
-          // console.log("API", data)
           setMFData(data)
         })
     }
@@ -152,27 +143,55 @@ export default function Virtualize(props) {
   }, [])
 
   useEffect(() => {
-    // console.log("mfData: ", mfData)
     if (mfData.length) {
       setMFDefaultData(
         mfData.filter((o) => {
-          if (props?.selectedSchemes) {
-            return props.selectedSchemes.includes(o.schemeCode)
+          if (selectedSchemes) {
+            return (
+              selectedSchemes.findIndex(
+                (ele) =>
+                  ele.schemeCode == o.schemeCode &&
+                  ele.schemeName == o.schemeName
+              ) != -1
+            )
           }
           return false
         })
       )
     }
-  }, [mfData, props])
+  }, [mfData, selectedSchemes])
 
-  //   useEffect(() => {
-  //     console.log("mfDefaultData: ", mfDefaultData)
-  //   }, [mfDefaultData])
+  // useEffect(() => {
+  //   console.log("mfDefaultData: ", mfDefaultData)
+  // }, [mfDefaultData])
 
   const handDataChange = (newValue) => {
-    setMFDefaultData(newValue)
-    if (props?.dataChangeHandler) {
-      props.dataChangeHandler(newValue)
+    setMFDefaultData(
+      mfData.filter(
+        (o) =>
+          newValue.findIndex(
+            (ele) =>
+              ele.schemeCode == o.schemeCode && ele.schemeName == o.schemeName
+          ) != -1
+      )
+    )
+    if (dataChangeHandler) {
+      dataChangeHandler(newValue)
+    }
+  }
+
+  const handListChange = (newValue) => {
+    if (dataChangeHandler) {
+      dataChangeHandler(
+        mfData
+          .filter((o) => newValue.findIndex((ele) => ele == o.schemeCode) != -1)
+          .map((o) => {
+            return {
+              schemeCode: o.schemeCode,
+              schemeName: o.schemeName,
+            }
+          })
+      )
     }
   }
 
@@ -187,7 +206,7 @@ export default function Virtualize(props) {
             handDataChange(newValue)
           }}
           filterSelectedOptions
-          style={{ width: 1000 }}
+          style={{ width: "100%" }}
           disableListWrap
           classes={classes}
           ListboxComponent={
@@ -211,6 +230,11 @@ export default function Virtualize(props) {
       ) : (
         <CircularProgress />
       )}
+      <MFDataImportExport
+        selectedSchemes={mfDefaultData}
+        addToSelectedSchemes={handDataChange}
+        handListChange={handListChange}
+      />
     </Fragment>
   )
 }

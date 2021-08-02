@@ -1,8 +1,11 @@
 import React, { Fragment, useRef } from "react"
 
+import Button from "@material-ui/core/Button"
+
 export default function MFDataImportExport(props) {
-  const setSelectedSchemes = props.setSelectedSchemes
+  const addToSelectedSchemes = props.addToSelectedSchemes
   const selectedSchemes = props.selectedSchemes
+  const handListChange = props.handListChange
   const fileField = useRef(null)
 
   const upload = (e) => {
@@ -24,8 +27,10 @@ export default function MFDataImportExport(props) {
       // Show first 80 characters of the file
       let jsonData = JSON.parse(fileContents)
       // console.log("jsonData", jsonData)
-      if (jsonData?.selectedSchemes) {
-        setSelectedSchemes(jsonData.selectedSchemes)
+      if (jsonData?.schemeList) {
+        handListChange(jsonData?.schemeList)
+      } else if (jsonData?.selectedSchemes) {
+        addToSelectedSchemes(jsonData.selectedSchemes)
       }
     }
 
@@ -61,19 +66,32 @@ export default function MFDataImportExport(props) {
 
   return (
     <Fragment>
+      <Button variant="contained" color="primary" onClick={upload}>
+        IMPORT
+      </Button>
       {selectedSchemes.length ? (
-        <button
-          onClick={() => {
-            exportToJson({ selectedSchemes: selectedSchemes })
-          }}
-        >
-          {`Download Json`}
-        </button>
+        <Fragment>
+          {/* <button
+            onClick={() => {
+              exportToJson({ selectedSchemes: selectedSchemes })
+            }}
+          >
+            {`Download Json`}
+          </button> */}
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              exportToJson({ selectedSchemes: selectedSchemes })
+            }}
+          >
+            EXPORT
+          </Button>
+        </Fragment>
       ) : null}
-
-      <p>
+      {/* <p>
         <button onClick={upload}>Upload a file!</button> Only json files are ok.
-      </p>
+      </p> */}
 
       <input
         type="file"

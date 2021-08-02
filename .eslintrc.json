@@ -14,7 +14,7 @@
     "node": true
   },
   "rules": {
-    "no-unused-vars": "off",
+    "no-unused-vars": "error",
     "react/require-default-props": 0,
     "unused-imports/no-unused-imports": "error",
     "prettier/prettier": "error",

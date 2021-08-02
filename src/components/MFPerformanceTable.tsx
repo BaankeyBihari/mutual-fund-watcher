@@ -38,31 +38,13 @@ const StyledTableRow = withStyles((theme: Theme) =>
   })
 )(TableRow)
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein }
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-]
-
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
   },
 })
 
-export default function CustomizedTables({ data }) {
+export default function CustomizedTables({ data, do123 }) {
   const classes = useStyles()
 
   const [rowData, setRowData] = useState([])
@@ -70,12 +52,9 @@ export default function CustomizedTables({ data }) {
   useEffect(() => {
     // console.log("data", data)
     if (data && data.length) {
-      let tRowData = []
-      for (let i = 1; i < data[0].length; i++) {
-        tRowData.push([data[0][i], data[1][i]])
-      }
-      tRowData.sort((a, b) => b[1] - a[1])
-      setRowData(tRowData)
+      let tdata = data.slice()
+      tdata.sort((a, b) => b[1] - a[1])
+      setRowData(tdata)
     } else {
       setRowData([])
     }
@@ -92,17 +71,37 @@ export default function CustomizedTables({ data }) {
           <Table className={classes.table} aria-label="customized table">
             <TableHead>
               <TableRow>
+                <StyledTableCell>Scheme Index</StyledTableCell>
                 <StyledTableCell>Scheme Name</StyledTableCell>
-                <StyledTableCell align="right">Gain</StyledTableCell>
+                {do123 ? (
+                  <Fragment>
+                    <StyledTableCell align="right">Gain G1</StyledTableCell>
+                    <StyledTableCell align="right">Gain G2</StyledTableCell>
+                    <StyledTableCell align="right">Gain G3</StyledTableCell>
+                  </Fragment>
+                ) : (
+                  <StyledTableCell align="right">Gain</StyledTableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowData.map((row) => (
-                <StyledTableRow key={row[0]}>
+              {rowData.map((row, index) => (
+                <StyledTableRow key={row[0].toString() + index.toString()}>
+                  <StyledTableCell component="th" scope="row">
+                    {index + 1}
+                  </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
                     {row[0]}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{row[1]}</StyledTableCell>
+                  {do123 ? (
+                    <Fragment>
+                      <StyledTableCell align="right">{row[1]}</StyledTableCell>
+                      <StyledTableCell align="right">{row[2]}</StyledTableCell>
+                      <StyledTableCell align="right">{row[3]}</StyledTableCell>
+                    </Fragment>
+                  ) : (
+                    <StyledTableCell align="right">{row[1]}</StyledTableCell>
+                  )}
                 </StyledTableRow>
               ))}
             </TableBody>

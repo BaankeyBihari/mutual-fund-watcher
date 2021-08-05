@@ -53,12 +53,32 @@ export default function CustomizedTables({ data, do123 }) {
     // console.log("data", data)
     if (data && data.length) {
       let tdata = data.slice()
+      if (do123) {
+        for (let i = 3; i >= 2; i--) {
+          tdata.sort((a, b) => {
+            if (b[i] && a[i]) {
+              return b[i] - a[i]
+            } else if (b[i] && !a[i]) {
+              return 1
+            } else if (!b[i] && a[i]) {
+              return -1
+            }
+            return 0
+          })
+          let f = (k, ind) => {
+            let r = [...k]
+            r[i] = [r[i], ind + 1]
+            return r
+          }
+          tdata = tdata.map((e, index) => f(e, index))
+        }
+      }
       tdata.sort((a, b) => b[1] - a[1])
       setRowData(tdata)
     } else {
       setRowData([])
     }
-  }, [data])
+  }, [data, do123])
 
   // useEffect(() => {
   //   console.log("rowData", rowData)
@@ -96,8 +116,14 @@ export default function CustomizedTables({ data, do123 }) {
                   {do123 ? (
                     <Fragment>
                       <StyledTableCell align="right">{row[1]}</StyledTableCell>
-                      <StyledTableCell align="right">{row[2]}</StyledTableCell>
-                      <StyledTableCell align="right">{row[3]}</StyledTableCell>
+                      <StyledTableCell align="right">
+                        {/* {row[2]} */}
+                        {row[2][0]} {`(${row[2][1]})`}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {/* {row[3]} */}
+                        {row[3][0]} {`(${row[3][1]})`}
+                      </StyledTableCell>
                     </Fragment>
                   ) : (
                     <StyledTableCell align="right">{row[1]}</StyledTableCell>

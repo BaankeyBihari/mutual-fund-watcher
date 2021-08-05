@@ -14,11 +14,11 @@ export default function MFWindow(props) {
   const [selectedSchemes, setSelectedSchemes] = useState([])
   const [tank, setTank] = useState({})
   const [allowOutdated, setAllowOtdated] = useState(true)
-  const [show10, setShow10] = useState(true)
-  const [show30, setShow30] = useState(true)
-  const [show60, setShow60] = useState(true)
-  const [show90, setShow90] = useState(true)
-  const [showCustom, setShowCustom] = useState(false)
+  const [show10, setShow10] = useState(false)
+  const [show30, setShow30] = useState(false)
+  const [show60, setShow60] = useState(false)
+  const [show90, setShow90] = useState(false)
+  const [showCustom, setShowCustom] = useState(true)
   const [tankOutdated, setTankOutdated] = useState([])
   const [tankFetchedAt, setTankFetchedAt] = useState({})
   const MF_MARK_OUTDATED_IN_DAYS = props.MF_MARK_OUTDATED_IN_DAYS
@@ -195,7 +195,6 @@ export default function MFWindow(props) {
             tankOutdated={tankOutdated}
             allowOutdated={allowOutdated}
             windowSize={30}
-            offset={30}
           />
         ) : null}
         <FormControlLabel
@@ -212,7 +211,6 @@ export default function MFWindow(props) {
             tankOutdated={tankOutdated}
             allowOutdated={allowOutdated}
             windowSize={60}
-            offset={120}
           />
         ) : null}
         <FormControlLabel
@@ -229,7 +227,6 @@ export default function MFWindow(props) {
             tankOutdated={tankOutdated}
             allowOutdated={allowOutdated}
             windowSize={90}
-            offset={300}
           />
         ) : null}
         <FormControlLabel

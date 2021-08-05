@@ -1,5 +1,4 @@
 import { useState, useMemo, Fragment } from "react"
-import { useEffect } from "react"
 
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormGroup from "@material-ui/core/FormGroup"
@@ -23,9 +22,9 @@ export default function MFPerformanceWindow(props) {
   const [showGainGraph, setShowGainGraph] = useState(false)
   const [showNAVGraph, setShowNAVGraph] = useState(false)
 
-  useEffect(() => {
-    setDo123(windowSize <= 730)
-  }, [windowSize])
+  // useEffect(() => {
+  //   setDo123(windowSize <= 730)
+  // }, [windowSize])
 
   useMemo(() => {
     let tgDataFrame = {}
@@ -222,8 +221,16 @@ export default function MFPerformanceWindow(props) {
                 />
               ) : null}
             </Fragment>
+            <Fragment>
+              <FormControlLabel
+                control={
+                  <ToggleSwitch inputState={do123} onInputChange={setDo123} />
+                }
+                label={do123 ? "Show Single" : "Show do123"}
+              />
+              <MFPerformanceTable data={tableData} do123={do123} />
+            </Fragment>
           </FormGroup>
-          <MFPerformanceTable data={tableData} do123={do123} />
         </Fragment>
       ) : null}
     </Fragment>

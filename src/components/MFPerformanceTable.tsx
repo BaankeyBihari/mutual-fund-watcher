@@ -117,12 +117,14 @@ export default function CustomizedTables({ data, do123 }) {
                     <Fragment>
                       <StyledTableCell align="right">{row[1]}</StyledTableCell>
                       <StyledTableCell align="right">
-                        {/* {row[2]} */}
-                        {row[2][0]} {`(${row[2][1]})`}
+                        {row[2]?.length && row[2].length == 2
+                          ? `${row[2][0]} (${row[2][1]})`
+                          : `${row[2]}`}
                       </StyledTableCell>
                       <StyledTableCell align="right">
-                        {/* {row[3]} */}
-                        {row[3][0]} {`(${row[3][1]})`}
+                        {row[3]?.length && row[3].length == 2
+                          ? `${row[3][0]} (${row[3][1]})`
+                          : `${row[3]}`}
                       </StyledTableCell>
                     </Fragment>
                   ) : (

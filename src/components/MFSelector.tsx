@@ -11,8 +11,8 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from "react"
-import { useState } from "react"
 
 import { Typography } from "@material-ui/core"
 import { CircularProgress } from "@material-ui/core"
@@ -234,6 +234,8 @@ export default function Virtualize(props) {
         selectedSchemes={mfDefaultData}
         addToSelectedSchemes={handDataChange}
         handListChange={handListChange}
+        investments={props.investments}
+        setInvestments={props.setInvestments}
       />
     </Fragment>
   )

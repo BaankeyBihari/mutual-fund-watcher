@@ -8,7 +8,7 @@ const MFChart = (props) => {
         <Chart
           width={"100%"}
           //   height={"400px"}
-          chartType="LineChart"
+          chartType={props.chartType}
           loader={<div>Loading Chart</div>}
           data={props.data}
           options={{

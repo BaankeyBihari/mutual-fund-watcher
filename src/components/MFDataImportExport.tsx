@@ -6,6 +6,8 @@ export default function MFDataImportExport(props) {
   const addToSelectedSchemes = props.addToSelectedSchemes
   const selectedSchemes = props.selectedSchemes
   const handListChange = props.handListChange
+  const investments = props.investments
+  const setInvestments = props.setInvestments
   const fileField = useRef(null)
 
   const upload = (e) => {
@@ -27,6 +29,9 @@ export default function MFDataImportExport(props) {
       // Show first 80 characters of the file
       let jsonData = JSON.parse(fileContents)
       // console.log("jsonData", jsonData)
+      if (jsonData?.investments) {
+        setInvestments(jsonData?.investments)
+      }
       if (jsonData?.schemeList) {
         handListChange(jsonData?.schemeList)
       } else if (jsonData?.selectedSchemes) {
@@ -82,7 +87,10 @@ export default function MFDataImportExport(props) {
             variant="contained"
             color="secondary"
             onClick={() => {
-              exportToJson({ selectedSchemes: selectedSchemes })
+              exportToJson({
+                selectedSchemes: selectedSchemes,
+                investments: investments,
+              })
             }}
           >
             EXPORT
@@ -97,7 +105,7 @@ export default function MFDataImportExport(props) {
         type="file"
         className="hidden"
         multiple={false}
-        accept=".json,.csv,.txt,.text,application/json,text/csv,text/plain"
+        accept=".json,application/json"
         onChange={(evt) => openFile(evt)}
         ref={fileField}
       />

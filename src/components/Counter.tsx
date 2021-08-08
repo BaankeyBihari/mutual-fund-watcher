@@ -2,6 +2,8 @@ import { Fragment } from "react"
 
 import Box from "@material-ui/core/Box/Box"
 import Button from "@material-ui/core/Button/Button"
+import Container from "@material-ui/core/Container/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
 import Input from "@material-ui/core/Input/Input"
 
 interface CounterInputs {
@@ -52,21 +54,26 @@ export default function Counter({
   }
   return (
     <Fragment>
-      <Button onClick={increment}>+</Button>
-      <Box width={70}>
-        <Input
-          disableUnderline={true}
-          disabled={true}
-          value={initialValue}
-          onChange={change}
-          type={"number"}
-          fullWidth
-          inputProps={{
-            "aria-label": "description",
-          }}
-        />
-      </Box>
-      <Button onClick={decrement}>-</Button>
+      <CssBaseline />
+      <Container>
+        <Box my={`MFWindowCounter`}>
+          <Button onClick={increment}>+</Button>
+          <Box width={70}>
+            <Input
+              disableUnderline={true}
+              disabled={true}
+              value={initialValue}
+              onChange={change}
+              type={"number"}
+              fullWidth
+              inputProps={{
+                "aria-label": "description",
+              }}
+            />
+          </Box>
+          <Button onClick={decrement}>-</Button>
+        </Box>
+      </Container>
     </Fragment>
   )
 }

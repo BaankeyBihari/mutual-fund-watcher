@@ -1,10 +1,14 @@
 import { useState, useEffect, Fragment, useRef } from "react"
 import { useCallback } from "react"
 
+import Box from "@material-ui/core/Box/Box"
+import Container from "@material-ui/core/Container/Container"
+import CssBaseline from "@material-ui/core/CssBaseline"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormGroup from "@material-ui/core/FormGroup"
 import { parse, subDays, subSeconds } from "date-fns"
 
+import MFInvestment from "@components/MFInvestment"
 import MFPerformanceWindow from "@components/MFPerformanceWindow"
 import MFPerformanceWindowCustom from "@components/MFPerformanceWindowCustom"
 import MFSelector from "@components/MFSelector"
@@ -12,6 +16,8 @@ import ToggleSwitch from "@components/ToggleSwitch"
 
 export default function MFWindow(props) {
   const [selectedSchemes, setSelectedSchemes] = useState([])
+  const [selectedInvestmentSchemes, setSelectedInvestmentSchemes] = useState([])
+  const [investments, setInvestments] = useState([])
   const [tank, setTank] = useState({})
   const [allowOutdated, setAllowOtdated] = useState(true)
   const [show10, setShow10] = useState(false)
@@ -19,6 +25,7 @@ export default function MFWindow(props) {
   const [show60, setShow60] = useState(false)
   const [show90, setShow90] = useState(false)
   const [showCustom, setShowCustom] = useState(true)
+  const [showInvestments, setShowInvestments] = useState(true)
   const [tankOutdated, setTankOutdated] = useState([])
   const [tankFetchedAt, setTankFetchedAt] = useState({})
   const MF_MARK_OUTDATED_IN_DAYS = props.MF_MARK_OUTDATED_IN_DAYS
@@ -99,8 +106,22 @@ export default function MFWindow(props) {
     function parseJSON(response) {
       return response.json()
     }
+    let tempSelectedSchemes = [
+      ...selectedSchemes,
+      ...selectedInvestmentSchemes,
+    ].reduce((acc, scheme) => {
+      const hasProduct = !!acc.find(
+        (uniqueProduct) =>
+          uniqueProduct.schemeCode === scheme.schemeCode &&
+          uniqueProduct.schemeName === scheme.schemeName
+      )
+      if (!hasProduct) {
+        return [...acc, scheme]
+      }
+      return acc
+    }, [])
     Promise.all(
-      selectedSchemes
+      tempSelectedSchemes
         .filter((schemeToFetch) => {
           let refreshWindow = subSeconds(
             new Date(),
@@ -111,7 +132,7 @@ export default function MFWindow(props) {
               (tankFetchedAt.hasOwnProperty(schemeToFetch.schemeCode) &&
                 refreshWindow >
                   new Date(tankFetchedAt[schemeToFetch.schemeCode]))) &&
-            selectedSchemes.includes(schemeToFetch) &&
+            tempSelectedSchemes.includes(schemeToFetch) &&
             (!tankOutdated.includes(schemeToFetch.schemeCode) || allowOutdated)
           )
         })
@@ -125,7 +146,7 @@ export default function MFWindow(props) {
     )
       .then((value) => {
         // console.log("value", value)
-        value.map((data) => {
+        value.map((data: any) => {
           if (data.status === "SUCCESS") {
             let schemeToFetch = {
               schemeCode: data.meta.scheme_code,
@@ -136,9 +157,9 @@ export default function MFWindow(props) {
             let topDate = parse(data.data[0].date, "dd-MM-yyyy", new Date())
             // console.log("topDate", topDate)
             if (wt > topDate) {
-              setTankOutdatedRemove(schemeKey(schemeToFetch))
+              setTankOutdatedRemove(schemeToFetch.schemeCode)
             }
-            updateTankFetchedAt(schemeKey(schemeToFetch), new Date())
+            updateTankFetchedAt(schemeToFetch.schemeCode, new Date())
           }
         })
         //json response
@@ -147,107 +168,143 @@ export default function MFWindow(props) {
         console.error(err)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSchemes])
+  }, [selectedSchemes, selectedInvestmentSchemes])
 
   return (
     <Fragment>
-      <MFSelector
-        selectedSchemes={selectedSchemes}
-        dataChangeHandler={handleDataChange}
-      />
-      <FormGroup row>
-        <FormControlLabel
-          control={
-            <ToggleSwitch
-              inputState={allowOutdated}
-              onInputChange={setAllowOtdated}
+      <CssBaseline />
+      <Container>
+        <Box my={`MFWindow`}>
+          <MFSelector
+            selectedSchemes={selectedSchemes}
+            dataChangeHandler={handleDataChange}
+            investments={investments}
+            setInvestments={setInvestments}
+          />
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <ToggleSwitch
+                  inputState={allowOutdated}
+                  onInputChange={setAllowOtdated}
+                />
+              }
+              label={allowOutdated ? "Hide Outdated" : "Show Outdated"}
             />
-          }
-          label="Toggle Outdated"
-        />
-        <FormControlLabel
-          control={
-            <ToggleSwitch inputState={show10} onInputChange={setShow10} />
-          }
-          label="Toggle 10"
-        />
+            <FormControlLabel
+              control={
+                <ToggleSwitch inputState={show10} onInputChange={setShow10} />
+              }
+              label={show10 ? "Hide 10 Days" : "Show 10 days"}
+            />
+            <FormControlLabel
+              control={
+                <ToggleSwitch inputState={show30} onInputChange={setShow30} />
+              }
+              label={show30 ? "Hide 30 Days" : "Show 30 days"}
+            />
+            <FormControlLabel
+              control={
+                <ToggleSwitch inputState={show60} onInputChange={setShow60} />
+              }
+              label={show60 ? "Hide 60 Days" : "Show 60 days"}
+            />
+            <FormControlLabel
+              control={
+                <ToggleSwitch inputState={show90} onInputChange={setShow90} />
+              }
+              label={show90 ? "Hide 90 Days" : "Show 90 days"}
+            />
+            <FormControlLabel
+              control={
+                <ToggleSwitch
+                  inputState={showCustom}
+                  onInputChange={setShowCustom}
+                />
+              }
+              label={showCustom ? "Hide Custom View" : "Show Custom View"}
+            />
+            <FormControlLabel
+              control={
+                <ToggleSwitch
+                  inputState={showInvestments}
+                  onInputChange={setShowInvestments}
+                />
+              }
+              label={showInvestments ? "Hide Investments" : "Show Investments"}
+            />
+          </FormGroup>
+        </Box>
         {show10 ? (
-          <MFPerformanceWindow
-            selectedSchemes={selectedSchemes}
-            tank={tank}
-            schemeKey={schemeKey}
-            tankOutdated={tankOutdated}
-            allowOutdated={allowOutdated}
-            windowSize={10}
-          />
-        ) : null}
-        <FormControlLabel
-          control={
-            <ToggleSwitch inputState={show30} onInputChange={setShow30} />
-          }
-          label="Toggle 30"
-        />
-        {show30 ? (
-          <MFPerformanceWindow
-            selectedSchemes={selectedSchemes}
-            tank={tank}
-            schemeKey={schemeKey}
-            tankOutdated={tankOutdated}
-            allowOutdated={allowOutdated}
-            windowSize={30}
-          />
-        ) : null}
-        <FormControlLabel
-          control={
-            <ToggleSwitch inputState={show60} onInputChange={setShow60} />
-          }
-          label="Toggle 60"
-        />
-        {show60 ? (
-          <MFPerformanceWindow
-            selectedSchemes={selectedSchemes}
-            tank={tank}
-            schemeKey={schemeKey}
-            tankOutdated={tankOutdated}
-            allowOutdated={allowOutdated}
-            windowSize={60}
-          />
-        ) : null}
-        <FormControlLabel
-          control={
-            <ToggleSwitch inputState={show90} onInputChange={setShow90} />
-          }
-          label="Toggle 90"
-        />
-        {show90 ? (
-          <MFPerformanceWindow
-            selectedSchemes={selectedSchemes}
-            tank={tank}
-            schemeKey={schemeKey}
-            tankOutdated={tankOutdated}
-            allowOutdated={allowOutdated}
-            windowSize={90}
-          />
-        ) : null}
-        <FormControlLabel
-          control={
-            <ToggleSwitch
-              inputState={showCustom}
-              onInputChange={setShowCustom}
+          <Box>
+            <MFPerformanceWindow
+              selectedSchemes={selectedSchemes}
+              tank={tank}
+              schemeKey={schemeKey}
+              tankOutdated={tankOutdated}
+              allowOutdated={allowOutdated}
+              windowSize={10}
             />
-          }
-          label="Toggle Custom"
-        />
+          </Box>
+        ) : null}
+        {show30 ? (
+          <Box>
+            <MFPerformanceWindow
+              selectedSchemes={selectedSchemes}
+              tank={tank}
+              schemeKey={schemeKey}
+              tankOutdated={tankOutdated}
+              allowOutdated={allowOutdated}
+              windowSize={30}
+            />
+          </Box>
+        ) : null}
+        {show60 ? (
+          <Box>
+            <MFPerformanceWindow
+              selectedSchemes={selectedSchemes}
+              tank={tank}
+              schemeKey={schemeKey}
+              tankOutdated={tankOutdated}
+              allowOutdated={allowOutdated}
+              windowSize={60}
+            />
+          </Box>
+        ) : null}
+        {show90 ? (
+          <Box>
+            <MFPerformanceWindow
+              selectedSchemes={selectedSchemes}
+              tank={tank}
+              schemeKey={schemeKey}
+              tankOutdated={tankOutdated}
+              allowOutdated={allowOutdated}
+              windowSize={90}
+            />
+          </Box>
+        ) : null}
         {showCustom ? (
-          <MFPerformanceWindowCustom
-            selectedSchemes={selectedSchemes}
+          <Box>
+            <MFPerformanceWindowCustom
+              selectedSchemes={selectedSchemes}
+              tank={tank}
+              schemeKey={schemeKey}
+              tankOutdated={tankOutdated}
+              allowOutdated={allowOutdated}
+            />
+          </Box>
+        ) : null}
+        <Box>
+          <MFInvestment
+            selectedInvestmentSchemes={selectedInvestmentSchemes}
+            setSelectedInvestmentSchemes={setSelectedInvestmentSchemes}
+            investments={investments}
+            // setInvestments={setInvestments}
             tank={tank}
             schemeKey={schemeKey}
-            tankOutdated={tankOutdated}
-            allowOutdated={allowOutdated}
           />
-        ) : null}
-      </FormGroup>
+        </Box>
+      </Container>
     </Fragment>
   )
 }

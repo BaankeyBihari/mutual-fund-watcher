@@ -2,51 +2,9 @@ import React, { Fragment } from "react"
 import { useEffect } from "react"
 import { useState } from "react"
 
-import Paper from "@material-ui/core/Paper"
-import {
-  withStyles,
-  Theme,
-  createStyles,
-  makeStyles,
-} from "@material-ui/core/styles"
-import Table from "@material-ui/core/Table"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableContainer from "@material-ui/core/TableContainer"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  })
-)(TableCell)
-
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      "&:nth-of-type(odd)": {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-  })
-)(TableRow)
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700,
-  },
-})
+import CTable from "@components/CTable"
 
 export default function CustomizedTables({ data, do123 }) {
-  const classes = useStyles()
-
   const [rowData, setRowData] = useState([])
 
   useEffect(() => {
@@ -87,54 +45,36 @@ export default function CustomizedTables({ data, do123 }) {
   return (
     <Fragment>
       {rowData.length ? (
-        <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Scheme Index</StyledTableCell>
-                <StyledTableCell>Scheme Name</StyledTableCell>
-                {do123 ? (
-                  <Fragment>
-                    <StyledTableCell align="right">Gain G1</StyledTableCell>
-                    <StyledTableCell align="right">Gain G2</StyledTableCell>
-                    <StyledTableCell align="right">Gain G3</StyledTableCell>
-                  </Fragment>
-                ) : (
-                  <StyledTableCell align="right">Gain</StyledTableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rowData.map((row, index) => (
-                <StyledTableRow key={row[0].toString() + index.toString()}>
-                  <StyledTableCell component="th" scope="row">
-                    {index + 1}
-                  </StyledTableCell>
-                  <StyledTableCell component="th" scope="row">
-                    {row[0]}
-                  </StyledTableCell>
-                  {do123 ? (
-                    <Fragment>
-                      <StyledTableCell align="right">{row[1]}</StyledTableCell>
-                      <StyledTableCell align="right">
-                        {row[2]?.length && row[2].length == 2
-                          ? `${row[2][0]} (${row[2][1]})`
-                          : `${row[2]}`}
-                      </StyledTableCell>
-                      <StyledTableCell align="right">
-                        {row[3]?.length && row[3].length == 2
-                          ? `${row[3][0]} (${row[3][1]})`
-                          : `${row[3]}`}
-                      </StyledTableCell>
-                    </Fragment>
-                  ) : (
-                    <StyledTableCell align="right">{row[1]}</StyledTableCell>
-                  )}
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Fragment>
+          {do123 ? (
+            <Fragment>
+              <CTable
+                headers={["Scheme Name", "Gain 1", "Gain 2", "Gain 3"]}
+                data={rowData.map((el) => {
+                  let t = [...el]
+                  if (Array.isArray(t[t.length - 1])) {
+                    t[t.length - 1] = `${t[t.length - 1][0]} (${
+                      t[t.length - 1][1]
+                    })`
+                  }
+                  if (Array.isArray(t[t.length - 2])) {
+                    t[t.length - 2] = `${t[t.length - 2][0]} (${
+                      t[t.length - 2][1]
+                    })`
+                  }
+                  return t
+                })}
+              />
+            </Fragment>
+          ) : (
+            <Fragment>
+              <CTable
+                headers={["Scheme Name", "Gain"]}
+                data={rowData.map((el) => el.slice(0, 2))}
+              />
+            </Fragment>
+          )}
+        </Fragment>
       ) : null}
     </Fragment>
   )

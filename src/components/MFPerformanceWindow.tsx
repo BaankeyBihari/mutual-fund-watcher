@@ -200,6 +200,7 @@ export default function MFPerformanceWindow(props) {
                   data={gainDataFrame}
                   xTitle={"Days"}
                   yTitle={"Gain"}
+                  chartType={"LineChart"}
                 />
               ) : null}
             </Fragment>
@@ -218,6 +219,7 @@ export default function MFPerformanceWindow(props) {
                   data={navDataFrame}
                   xTitle={"Days"}
                   yTitle={"NAV"}
+                  chartType={"LineChart"}
                 />
               ) : null}
             </Fragment>

@@ -100,11 +100,16 @@ export default function MFInvestment({
         }
       })
       setOldestDate(
-        dates.map((e) => parse(e, "dd-MM-yyyy", new Date())).sort()[0]
+        dates
+          .map((e) => parse(e, "dd-MM-yyyy", new Date()))
+          .sort((a, b) => (a == b ? 0 : a > b ? 1 : -1))[0]
       )
       // console.log(
       //   "dates",
-      //   dates.map((e) => parse(e, "dd-MM-yyyy", new Date())).sort()
+      //   dates
+      //     .map((e) => parse(e, "dd-MM-yyyy", new Date()))
+      //     .sort((a, b) => (a == b ? 0 : a > b ? 1 : -1)),
+      //   dates
       // )
       setProtfolios(pt)
     }
@@ -263,7 +268,7 @@ export default function MFInvestment({
             if (rec) {
               let nav = rec.nav
               change = true
-              cv += roundTo2(holdings[el.schemeCode] * nav)
+              cv = roundTo2(cv + holdings[el.schemeCode] * nav)
             }
           })
         if (!change) {
@@ -314,16 +319,46 @@ export default function MFInvestment({
               headers={[
                 "Scheme",
                 "Investment",
+                "Invested",
                 "Redeemed",
                 "Units",
                 "Outstanding",
                 "Net",
               ]}
               data={displayRows
-                .sort((a, b) => (a.schemeName > b.schemeName ? 1 : -1))
+                .sort((a, b) =>
+                  a.schemeName == b.schemeName
+                    ? 0
+                    : a.schemeName > b.schemeName
+                    ? 1
+                    : -1
+                )
                 .map((el) => [
                   schemeKey(el),
                   el.investment,
+                  roundTo2(el.investment - el.earnings),
+                  el.earnings,
+                  el.balanceUnits,
+                  el.outstanding,
+                  el.balance,
+                ])}
+            />
+            <CTable
+              headers={[
+                "Scheme",
+                "Investment",
+                "Invested",
+                "Redeemed",
+                "Units",
+                "Outstanding",
+                "Net",
+              ]}
+              data={displayRows
+                .sort((a, b) => a.outstanding - b.outstanding)
+                .map((el) => [
+                  schemeKey(el),
+                  el.investment,
+                  roundTo2(el.investment - el.earnings),
                   el.earnings,
                   el.balanceUnits,
                   el.outstanding,

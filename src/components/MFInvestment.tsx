@@ -4,6 +4,7 @@ import Box from "@material-ui/core/Box/Box"
 import Container from "@material-ui/core/Container/Container"
 import { addDays, format, parse } from "date-fns"
 
+import Counter from "@components/Counter"
 import CTable from "@components/CTable"
 import MFPerformanceChart from "@components/MFPerformanceChart"
 
@@ -62,6 +63,7 @@ export default function MFInvestment({
   //   }
   const [displayRows, setDisplayRows] = useState([])
   const [protfolios, setProtfolios] = useState({})
+  const [windowSize, setWindowSize] = useState(10)
   useEffect(() => {
     if (investments.length && selectedInvestmentSchemes.length) {
       let pt = {}
@@ -218,18 +220,24 @@ export default function MFInvestment({
             if (!holdings.hasOwnProperty(el.schemeCode)) {
               holdings[el.schemeCode] = 0
             }
+            let ddd = dd
+            let dddf = format(ddd, "dd-MM-yyy")
+            while (!tank[el.schemeCode].data.find((elx) => elx.date == dddf)) {
+              ddd = addDays(ddd, 1)
+              dddf = format(ddd, "dd-MM-yyy")
+            }
             if (el.redeem) {
               investment = roundTo2(
                 investment -
                   el.units *
-                    tank[el.schemeCode].data.find((elx) => elx.date == ddf).nav
+                    tank[el.schemeCode].data.find((elx) => elx.date == dddf).nav
               )
               holdings[el.schemeCode] -= el.units
             } else {
               investment = roundTo2(
                 investment +
                   el.units *
-                    tank[el.schemeCode].data.find((elx) => elx.date == ddf).nav
+                    tank[el.schemeCode].data.find((elx) => elx.date == dddf).nav
               )
               holdings[el.schemeCode] += el.units
             }
@@ -311,17 +319,33 @@ export default function MFInvestment({
                 "Outstanding",
                 "Net",
               ]}
-              data={displayRows.map((el) => [
-                schemeKey(el),
-                el.investment,
-                el.earnings,
-                el.balanceUnits,
-                el.outstanding,
-                el.balance,
-              ])}
+              data={displayRows
+                .sort((a, b) => (a.schemeName > b.schemeName ? 1 : -1))
+                .map((el) => [
+                  schemeKey(el),
+                  el.investment,
+                  el.earnings,
+                  el.balanceUnits,
+                  el.outstanding,
+                  el.balance,
+                ])}
+            />
+            <Counter
+              initialValue={windowSize}
+              minimumValue={10}
+              maximumValue={900}
+              stepSize={10}
+              setValue={setWindowSize}
             />
             <MFPerformanceChart
-              data={dataFrame}
+              data={[
+                dataFrame[0],
+                ...dataFrame.slice(
+                  windowSize < dataFrame.length
+                    ? dataFrame.length - windowSize
+                    : 1
+                ),
+              ]}
               xTitle={"Days"}
               yTitle={"Value"}
               chartType={"AreaChart"}

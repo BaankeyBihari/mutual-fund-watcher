@@ -20,6 +20,9 @@ export default function MFInvestment({
   const roundTo2 = (n) => {
     return Math.round(n * 100) / 100
   }
+  const roundTo3 = (n) => {
+    return Math.round(n * 1000) / 1000
+  }
   const [oldestDate, setOldestDate] = useState(new Date())
   const [latestDate, setLatestDate] = useState(new Date())
   const [dataFrame, setDataFrame] = useState([])
@@ -146,9 +149,10 @@ export default function MFInvestment({
               return a
             }, 0)
           )
-          let balanceUnits =
+          let balanceUnits = roundTo3(
             invested.reduce((a, ele) => ele.units + a, 0) -
-            redeemed.reduce((a, ele) => ele.units + a, 0)
+              redeemed.reduce((a, ele) => ele.units + a, 0)
+          )
           let outstanding = roundTo2(balanceUnits * parseFloat(data[0].nav))
           dr.push({
             ...element,

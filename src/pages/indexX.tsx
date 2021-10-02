@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import Container from "@mui/material/Container"
+import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
 import { useRouter } from "next/router"
@@ -13,23 +13,19 @@ export default function Home(props) {
   // const MF_UPDATE_EXPIRY_IN_SECONDS = props.MF_UPDATE_EXPIRY_IN_SECONDS
   const router = useRouter()
   return (
-    <Container maxWidth="lg">
+    <Grid container maxWidth="lg">
       <NavBar {...props} currentItem="home" />
-      <Grid container>
-        <Grid item xs={12}>
-          <SampleContent />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {router.query?.mfCode}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {router.pathname}
-          </Typography>
-        </Grid>
+      <Grid>
+        <SampleContent />
       </Grid>
-    </Container>
+      <Box my={4}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {router.query?.mfCode}
+        </Typography>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {router.pathname}
+        </Typography>
+      </Box>
+    </Grid>
   )
 }

@@ -1,1 +1,12 @@
-module.exports = {}
+module.exports = {
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    CONSOLA_LEVEL: process.env.CONSOLA_LEVEL,
+    MF_MARK_OUTDATED_IN_DAYS: process.env.MF_MARK_OUTDATED_IN_DAYS,
+    MF_UPDATE_EXPIRY_IN_SECONDS: process.env.MF_UPDATE_EXPIRY_IN_SECONDS,
+    MF_SELECTOR_MIN_WINDOW_SIZE: process.env.MF_SELECTOR_MIN_WINDOW_SIZE,
+    MF_SELECTOR_MAX_SLICE_SIZE_FOR_SUGGESTIONS:
+      process.env.MF_SELECTOR_MAX_SLICE_SIZE_FOR_SUGGESTIONS,
+    MF_SELECTOR_MAX_PARTIONS: process.env.MF_SELECTOR_MAX_PARTIONS,
+  },
+}

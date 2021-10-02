@@ -8,5 +8,6 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "cSpell.words": ["consola", "immer", "uuidv", "zustand"]
 }
